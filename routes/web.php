@@ -19,4 +19,6 @@ Route::get('posts/category/{category}',[PostController::class,'postByCategory'])
 
 Auth::routes();
 
+
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
