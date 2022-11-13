@@ -21,19 +21,21 @@ class PostController extends Controller
         return view('posts.create',['categories' =>Category::all()]);
     }
 
-    public function store(Request $req){
-        Post::create([
-            'title' => $req->title,
-            'content' => $req->content,
-            'category_id' => $req->category_id,
-        ]);
-        return redirect()->route('posts.index');
+    public function store(Request $request)
+    {
+        $post = new Post();
+        $post->title = $request->title;
+        $post->body = $request->body;
+        if($post->save())
+        {
+            return new PostResource($post);
+        }
     }
 
-    public function show(Post $post){
-
-
-        return view('posts.show',['post' => $post, 'categories' => Category::all()]);
+    public function show($id)
+    {
+        $post = Post::findOrFail($id);
+        return new PostResource($post);
     }
 
     public function edit(Post $post)
@@ -42,20 +44,23 @@ class PostController extends Controller
     }
 
 
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $id)
     {
-        $post->update([
-           'title' => $request->input('title'),
-           'content' => $request->input('content'),
-            'category_id' => $request->category_id,
-        ]);
-        return redirect()->route('posts.index');
+        $post = Post::find($id);
+        $post->title = $request->title;
+        $post->body = $request->body;
+        $post->save();
+
+        return new PostResource($post);
     }
 
 
-    public function destroy(Post $post)
+    public function destroy($id)
     {
-        $post->delete();
-        return redirect()->route('posts.index');
+        $post = Post::findOrFail($id);
+        if($post->delete())
+        {
+            return new PostResource($post);
+        }
     }
 }
